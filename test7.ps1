@@ -2,7 +2,6 @@ function Ensure-WindowsPowerShell {
     if ($PSVersionTable.PSEdition -ne 'Desktop') {
         $script = $MyInvocation.MyCommand.Definition
         Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File `"$script`""
-        exit
     }
 }
 
