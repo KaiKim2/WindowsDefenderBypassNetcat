@@ -1,5 +1,5 @@
 # Usage
-Move the test.ps1 and login1.jpg to /var/www/html in your linux machine and start a listener in this directory. I prefer python: 
+Move the test.ps1 and login1.jpg to ```/var/www/html``` in your linux machine and start a listener in this directory. I prefer python: 
 ```
 python3 -m http.server
 ```
