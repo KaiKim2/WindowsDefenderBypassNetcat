@@ -1,4 +1,3 @@
-cat test.ps1      
 $ErrorActionPreference = 'SilentlyContinue'
 
 $TempDir = "C:\TempVBS"
