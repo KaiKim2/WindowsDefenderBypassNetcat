@@ -1,13 +1,13 @@
-# Usage
-Move the test.ps1 and login1.jpg to ```/var/www/html``` in your linux machine and start a listener in this directory. I prefer python: 
-```
-python3 -m http.server
-```
-After it starts runnin' on port 8000, open a separate terminal and run netcat on port 4444:
-```
-nc -lnvp 4444
-```
+## Disclaimer
 
-Then all you need to do is wait for the victim to click on the 'script.vbs' of the repo and allow the admin windows defender.
+This project is intended strictly for **educational use**, **authorized security research**, and **controlled lab environments** only.
 
+Do **not** use this code, techniques, or concepts against systems, networks, accounts, applications, or users without **explicit written permission** from the owner.
 
+The author does **not** encourage, support, or authorize any illegal, unethical, or unauthorized activity. You are solely responsible for how you use any material in this repository.
+
+If you are learning from this project, use it only in:
+- personal virtual labs
+- CTF platforms
+- intentionally vulnerable test environments
+- systems you own or are explicitly permitted to assess
